@@ -1,8 +1,7 @@
-load_packages = c("googlesheets4", "plyr", "dplyr", "tidyr", "ggplot2",  "cowplot", "epitools", "DescTools")
-pak::pkg_install(load_packages)
-
-lapply(load_packages, require, character.only = TRUE)
-
+# install.packages("pak", repos = "https://r-lib.github.io/p/pak/devel/")
+used_packages = c("googlesheets4", "dplyr", "ggplot2", "epitools", "DescTools")
+pak::pkg_install(used_packages)
+sapply(used_packages, require, character.only = TRUE)
 
 raw_data <- read_sheet("https://docs.google.com/spreadsheets/d/1xMJRrSQop81AV1IEelfiXIpmX2i9ze1D1ZiIqOPYYoA/edit?usp=sharing", sheet = 2)
 
@@ -40,15 +39,14 @@ cases = processed_data %>%
   filter(case) 
 
 ggplot(cases, aes(Date-6)) + 
-  geom_histogram(stat="count") + theme_cowplot()
+  geom_histogram(stat="count") + theme_classic()
 
-ggplot(cases, aes(Date-6, group = Am_Pm, fill = Am_Pm)) + geom_histogram(stat="count") + theme_cowplot()
-
-
+ggplot(cases, aes(Date-6, group = Am_Pm, fill = Am_Pm)) + 
+  geom_histogram(stat="count") + theme_classic()
 
 
 foods = c("Eggsalad", "Macaroni", "Cottage", "Tunasalad", "Icecream", "Other")
-df_attack = data.frame(foods)
+df_attack = data.frame(food = foods, attack_ratio = 0)
 for(i in seq_along(foods)){
   food = foods[i]
   df_attack[i,2] = with(processed_data,{
@@ -57,3 +55,12 @@ for(i in seq_along(foods)){
   })
 }
 df_attack
+
+
+with(processed_data,{
+  t = table(Member, Eggsalad)
+  print(t)
+  RelRisk(Rev(t))
+  #epitab(t, method="riskratio")
+})
+
