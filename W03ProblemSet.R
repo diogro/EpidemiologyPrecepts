@@ -24,21 +24,26 @@ processed_data <- processed_data %>%
   mutate(num_symptoms = Throat + Fever + Headache,
          case = FALSE,
          case = replace(case, which(missing), NA),
-         case = replace(case, which(num_symptoms >= 2), TRUE))
+         #case = replace(case, which(num_symptoms >= 2), TRUE)
+         case = replace(case, which(Throat == 1 | Fever == 1), TRUE)
+         #case = replace(case, which(Throat == 1 & Fever ==1), TRUE)
+         )
 
-# Filter members? Should we do this or not?
-processed_data = filter(processed_data, Member)
-
-with(processed_data,{
-  t = table(Throat, Vomit)
-  print(t)
-})
-
+# Are cases more common within members?
 with(processed_data,{
   t = table(Member, case)
   print(t)
   RelRisk(Rev(t))
 })
+
+# Filter members? Should we do this or not?
+# processed_data = filter(processed_data, Member)
+
+with(processed_data,{
+  t = table(Throat, Fever)
+  print(t)
+})
+
 
 cases = processed_data %>%
   filter(case) 
