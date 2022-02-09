@@ -19,7 +19,7 @@ processed_data = raw_data %>%
          Date = gsub(-2, NA_integer_, Date),
          Date = as.numeric(Date)) 
 
-# Case definition:
+# Case definition, change however you prefer:
 processed_data <- processed_data %>%
   mutate(num_symptoms = Throat + Fever + Headache,
          case = FALSE,
