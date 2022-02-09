@@ -29,14 +29,14 @@ processed_data <- processed_data %>%
          #case = replace(case, which(Throat == 1 & Fever ==1), TRUE)
          )
 
-# Are cases more common within members?
+## Are cases more common within members?
 with(processed_data,{
   t = table(Member, case)
   print(t)
   RelRisk(Rev(t))
 })
 
-# Filter members? Should we do this or not?
+## Filter members? Should we do this or not?
 # processed_data = filter(processed_data, Member)
 
 with(processed_data,{
