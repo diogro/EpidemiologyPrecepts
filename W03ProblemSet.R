@@ -17,22 +17,27 @@ processed_data = raw_data %>%
          has_date = as.numeric(has_date),
          Date = gsub(-1, NA_integer_, Date),
          Date = gsub(-2, NA_integer_, Date),
-         Date = as.numeric(Date),
-         case = 0,
-         case = replace(case, which(Throat == 1 | Vomit == 1), 1),
-         case = as.logical(case)) 
+         Date = as.numeric(Date)) 
+
+# Case definition:
+processed_data <- processed_data %>%
+  mutate(num_symptoms = Throat + Fever + Headache,
+         case = FALSE,
+         case = replace(case, which(missing), NA),
+         case = replace(case, which(num_symptoms >= 2), TRUE))
+
+# Filter members? Should we do this or not?
+processed_data = filter(processed_data, Member)
 
 with(processed_data,{
-  t = table(Member, missing)
+  t = table(Throat, Vomit)
   print(t)
-  RelRisk(Rev(t))
 })
 
 with(processed_data,{
   t = table(Member, case)
   print(t)
   RelRisk(Rev(t))
-  #epitab(t, method="riskratio")
 })
 
 cases = processed_data %>%
@@ -56,11 +61,16 @@ for(i in seq_along(foods)){
 }
 df_attack
 
+with(processed_data,{
+  t = table(Eggsalad, Tunasalad)
+  print(t)
+  print(RelRisk(Rev(t)))
+})
 
 with(processed_data,{
-  t = table(Member, Eggsalad)
+  t = table(Eggsalad, case, Other)
   print(t)
-  RelRisk(Rev(t))
-  #epitab(t, method="riskratio")
+  for(i in 1:2)
+    print(RelRisk(Rev(t[,,i])))
 })
 
