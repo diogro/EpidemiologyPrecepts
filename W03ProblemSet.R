@@ -19,17 +19,23 @@ processed_data = raw_data %>%
          Date = gsub(-2, NA_integer_, Date),
          Date = as.numeric(Date)) 
 
+## Is the attack rate higher among members?
+with(processed_data,{
+  t = table(Throat, Fever)
+  print(t)
+})
+
 # Case definition, change however you prefer:
 processed_data <- processed_data %>%
   mutate(num_symptoms = Throat + Fever + Headache,
          case = FALSE,
          case = replace(case, which(missing), NA),
          #case = replace(case, which(num_symptoms >= 2), TRUE)
-         case = replace(case, which(Throat == 1 | Fever == 1), TRUE)
-         #case = replace(case, which(Throat == 1 & Fever ==1), TRUE)
+         # case = replace(case, which(Throat == 1 | Fever == 1), TRUE)
+         case = replace(case, which(Throat == 1 & Fever ==1), TRUE)
          )
 
-## Are cases more common within members?
+## Is the attack rate higher among members?
 with(processed_data,{
   t = table(Member, case)
   print(t)
@@ -37,13 +43,7 @@ with(processed_data,{
 })
 
 ## Filter members? Should we do this or not?
-# processed_data = filter(processed_data, Member)
-
-with(processed_data,{
-  t = table(Throat, Fever)
-  print(t)
-})
-
+processed_data = filter(processed_data, Member)
 
 cases = processed_data %>%
   filter(case) 
@@ -73,9 +73,14 @@ with(processed_data,{
 })
 
 with(processed_data,{
-  t = table(Eggsalad, case, Other)
+  t = table(Other, case, Eggsalad)
   print(t)
   for(i in 1:2)
     print(RelRisk(Rev(t[,,i])))
 })
 
+with(filter(processed_data, Tunasalad==1),{
+  t = table(Eggsalad, case)
+  print(t)
+  print(RelRisk(Rev(t)))
+})
